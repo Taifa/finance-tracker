@@ -2,6 +2,8 @@ const expenseName = document.getElementById("ename");
 const expensePrice = document.getElementById("eprice");
 const expenseAdd = document.getElementById("eadd");
 const expenseInput = document.getElementById("exp-input");
+const dropDown = document.getElementById("dropdown");
+const dropFilter = document.getElementById("filter");
 let exArr = [];
 
 expenseAdd.addEventListener("click", function () {
@@ -10,6 +12,7 @@ expenseAdd.addEventListener("click", function () {
   const expense = {
     name: expenseName.value,
     price: parseFloat(expensePrice.value),
+    category: dropDown.value,
   };
 
   exArr.push(expense);
@@ -32,30 +35,46 @@ const renderExpenses = () => {
   const expenseList = document.getElementById("exp-list");
   expenseList.innerHTML = "";
   exArr.forEach((expense, i) => {
-    const li = document.createElement("li");
-    const name = document.createElement("span");
-    const text = document.createElement("span");
-    const price = document.createElement("span");
+    const filterValue = dropFilter.value;
+    if (filterValue != "All" && expense.category != filterValue) {
+      return;
+    } else {
+      const li = document.createElement("li");
+      const name = document.createElement("span");
+      const text = document.createElement("span");
+      const text2 = document.createElement("span");
+      const price = document.createElement("span");
+      const category = document.createElement("span");
 
-    const button = document.createElement("button");
-    button.textContent = "Delete";
-    button.addEventListener("click", function () {
-      exArr.splice(i, 1);
-      updateUI();
-    });
+      const button = document.createElement("button");
+      button.textContent = "Delete";
+      button.addEventListener("click", function () {
+        exArr.splice(i, 1);
+        updateUI();
+      });
 
-    name.textContent = expense.name;
-    text.textContent = ": ";
-    price.textContent = expense.price.toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD",
-    });
+      dropFilter.addEventListener("change", function () {
+        updateUI();
+      });
 
-    li.appendChild(name);
-    li.appendChild(text);
-    li.appendChild(price);
-    li.appendChild(button);
-    expenseList.appendChild(li);
+      name.textContent = expense.name;
+      text.textContent = ") : ";
+      price.textContent = expense.price.toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+      });
+
+      category.textContent = expense.category;
+      text2.textContent = " (";
+
+      li.appendChild(name);
+      li.appendChild(text2);
+      li.appendChild(category);
+      li.appendChild(text);
+      li.appendChild(price);
+      li.appendChild(button);
+      expenseList.appendChild(li);
+    }
   });
 };
 
