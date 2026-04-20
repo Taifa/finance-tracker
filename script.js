@@ -13,11 +13,21 @@ expenseAdd.addEventListener("click", function () {
   };
 
   exArr.push(expense);
-  renderExpenses();
-  expenseTotal();
+  updateUI();
   expenseInput.reset();
 });
 
+const saveExpenses = () => {
+  let stringExpenses = JSON.stringify(exArr);
+  localStorage.setItem("expenses", stringExpenses);
+};
+
+const loadExpenses = () => {
+  let savedStorage = localStorage.getItem("expenses");
+  if (savedStorage != null) {
+    exArr = JSON.parse(savedStorage);
+  }
+};
 const renderExpenses = () => {
   const expenseList = document.getElementById("exp-list");
   expenseList.innerHTML = "";
@@ -31,8 +41,7 @@ const renderExpenses = () => {
     button.textContent = "Delete";
     button.addEventListener("click", function () {
       exArr.splice(i, 1);
-      renderExpenses();
-      expenseTotal();
+      updateUI();
     });
 
     name.textContent = expense.name;
@@ -68,11 +77,16 @@ const expenseTotal = () => {
 
   exArr.forEach((expense, i) => {
     total += expense.price;
-    tAmount.textContent = total.toLocaleString("en-US", {
-      style: "currency",
-      currency: "USD",
-    });
+  });
+  tAmount.textContent = total.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
   });
 };
-
-renderExpenses();
+const updateUI = () => {
+  renderExpenses();
+  expenseTotal();
+  saveExpenses();
+};
+loadExpenses();
+updateUI();
