@@ -34,7 +34,7 @@ const loadExpenses = () => {
 const renderExpenses = () => {
   const expenseList = document.getElementById("exp-list");
   expenseList.innerHTML = "";
-  exArr.forEach((expense, i) => {
+  getVisibleExpenses().forEach((expense, i) => {
     const filterValue = dropFilter.value;
     if (filterValue != "All" && expense.category != filterValue) {
       return;
@@ -53,6 +53,38 @@ const renderExpenses = () => {
         updateUI();
       });
 
+      const editButton = document.createElement("button");
+      editButton.textContent = "Edit";
+      editButton.addEventListener("click", function () {
+        const currentExpense = exArr[i];
+        const newName = prompt(
+          "What is the expense's new name?",
+          currentExpense.name,
+        );
+        const newPrice = prompt(
+          "What is the expense's new price?",
+          currentExpense.price,
+        );
+        const newCategory = prompt(
+          "What is the expense's new category?",
+          currentExpense.category,
+        );
+
+        if (newName != null && newName != "") {
+          currentExpense.name = newName;
+        }
+        if (newPrice != null) {
+          const parsed = parseFloat(newPrice);
+          if (!Number.isNaN(parsed)) {
+            currentExpense.price = parseFloat(newPrice);
+          }
+        }
+        if (newCategory != null && newCategory != "") {
+          currentExpense.category = newCategory;
+        }
+        updateUI();
+      });
+
       dropFilter.addEventListener("change", function () {
         updateUI();
       });
@@ -66,13 +98,22 @@ const renderExpenses = () => {
 
       category.textContent = expense.category;
       text2.textContent = " (";
+      const leftDiv = document.createElement("div");
+      leftDiv.className = "left-div";
+      leftDiv.appendChild(name);
+      leftDiv.appendChild(text2);
+      leftDiv.appendChild(category);
+      leftDiv.appendChild(text);
 
-      li.appendChild(name);
-      li.appendChild(text2);
-      li.appendChild(category);
-      li.appendChild(text);
-      li.appendChild(price);
-      li.appendChild(button);
+      const rightDiv = document.createElement("div");
+      rightDiv.className = "right-div";
+      rightDiv.appendChild(price);
+      rightDiv.appendChild(editButton);
+      rightDiv.appendChild(button);
+
+      li.appendChild(leftDiv);
+      li.appendChild(rightDiv);
+
       expenseList.appendChild(li);
     }
   });
@@ -94,13 +135,28 @@ const expenseTotal = () => {
   tHeader.appendChild(tAmount);
   expenseTotal.appendChild(tHeader);
 
-  exArr.forEach((expense, i) => {
+  getVisibleExpenses().forEach((expense, i) => {
     total += expense.price;
   });
   tAmount.textContent = total.toLocaleString("en-US", {
     style: "currency",
     currency: "USD",
   });
+};
+
+const getVisibleExpenses = () => {
+  if (dropFilter.value === "All") {
+    return exArr;
+  } else {
+    let result = [];
+
+    exArr.forEach((expense, i) => {
+      if (expense.category === dropFilter.value) {
+        result.push(expense);
+      }
+    });
+    return result;
+  }
 };
 const updateUI = () => {
   renderExpenses();
