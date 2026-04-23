@@ -47,6 +47,7 @@ const renderExpenses = () => {
       const category = document.createElement("span");
 
       const button = document.createElement("button");
+      button.className = "delete-btn";
       button.textContent = "Delete";
       button.addEventListener("click", function () {
         exArr.splice(i, 1);
